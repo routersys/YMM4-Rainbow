@@ -10,6 +10,7 @@
     <BuildDependency Project="Rainbow.Shader/Rainbow.Shader.vcxproj" />
   </Project>
   <Project Path="Rainbow.Tests/Rainbow.Tests.csproj" />
+  <Project Path="Rainbow.Harness/Rainbow.Harness.csproj" />
   <Project Path="Rainbow.Shader/Rainbow.Shader.vcxproj">
     <BuildType Solution="*|*" Project="Release" />
     <Platform Solution="*|*" Project="Win32" />
