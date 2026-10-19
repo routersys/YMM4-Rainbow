@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="Rainbow/Rainbow.csproj">
+    <BuildDependency Project="Rainbow.Shader/Rainbow.Shader.vcxproj" />
+  </Project>
+  <Project Path="Rainbow.Shader/Rainbow.Shader.vcxproj">
+    <BuildType Solution="*|*" Project="Release" />
+    <Platform Solution="*|*" Project="Win32" />
+  </Project>
+</Solution>
