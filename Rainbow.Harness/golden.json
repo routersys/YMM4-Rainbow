@@ -1,0 +1,185 @@
+{
+  "adapter": "Intel(R) Iris(R) Xe Graphics",
+  "driver": "32.0.101.7085",
+  "input": "synthetic 640x480 89838D8976198E40",
+  "canvas": "1280x720",
+  "cases": [
+    {
+      "name": "default",
+      "frames": [
+        0
+      ],
+      "hash": "433602C581F389FA7ABC611221B2CE08A9CEC1E90DCB20F2244BE685BC00D21E"
+    },
+    {
+      "name": "sun-elevation-animated-frames",
+      "frames": [
+        0,
+        100,
+        200,
+        299
+      ],
+      "hash": "8827B8CD25889DE43E9627CD1C8CB23E899F04481A5614E10D0942F30AE948AC"
+    },
+    {
+      "name": "drop-radius-animated-frames",
+      "frames": [
+        0,
+        100,
+        200,
+        299
+      ],
+      "hash": "BABBACD8B22C44713F7D2E919690DC9C4AFB063001ED385E56D1BBFC22B2291B"
+    },
+    {
+      "name": "antisolar-direction-animated-frames",
+      "frames": [
+        0,
+        100,
+        200,
+        299
+      ],
+      "hash": "421876F1B43FAAEE52A9F0CEFFE0BE5201C7FEFD01D0AD26ADE732EC6F2F964D"
+    },
+    {
+      "name": "amount-0",
+      "frames": [
+        0
+      ],
+      "hash": "0A700F76CEDDBAD7C4B6A2C19D46939C1A93940E86C6EFEF1E5A53DB48D2A020"
+    },
+    {
+      "name": "amount-40",
+      "frames": [
+        0
+      ],
+      "hash": "43FB0B47B9C57CD29C6A04B301DDD6DE68FAC1449AE6E229AC8E74D615AE1AF7"
+    },
+    {
+      "name": "saturation-0",
+      "frames": [
+        0
+      ],
+      "hash": "BDEB1EBA0CD3A0378145419EB7C1DD725DEC8965EE2E7B82A9D88E97133C6A9F"
+    },
+    {
+      "name": "saturation-200",
+      "frames": [
+        0
+      ],
+      "hash": "1189C68ED4863C101550776F3418851546BFFDE7D5C83B681C96AA799AE3D772"
+    },
+    {
+      "name": "sun-elevation-10",
+      "frames": [
+        0
+      ],
+      "hash": "6CC646F435365BB6A66FF4497F7C5E5C9F1409BBB3E21662CD301CEFB2E9329B"
+    },
+    {
+      "name": "sun-elevation-45",
+      "frames": [
+        0
+      ],
+      "hash": "96ED6BDC533EC70260D7C1A048516A94389E27949BB2FE2425FF1DB6F0E1878C"
+    },
+    {
+      "name": "antisolar-direction-minus-30",
+      "frames": [
+        0
+      ],
+      "hash": "8741B95E694DBF147974AE8C81296637D1111520B25EF55B40860259F2D05877"
+    },
+    {
+      "name": "antisolar-direction-30",
+      "frames": [
+        0
+      ],
+      "hash": "F4F03A1C8299D297B18BA9B402E893E2A9334BB9623AA9A6546952B021CBE311"
+    },
+    {
+      "name": "sun-diameter-0",
+      "frames": [
+        0
+      ],
+      "hash": "914E5DD4CA498A02CCD522F04CB07AE20C022B100FB8F5357C15F55AD7AEAA77"
+    },
+    {
+      "name": "sun-diameter-2",
+      "frames": [
+        0
+      ],
+      "hash": "36651A778F8728620BE558611107A6F7F32BADA9E1B9698D84883A7613BC1DB5"
+    },
+    {
+      "name": "field-of-view-30",
+      "frames": [
+        0
+      ],
+      "hash": "9293FBED9476270E50CD705C8A66B24C3B0915000D934F29207E3A181A1CB96E"
+    },
+    {
+      "name": "field-of-view-120",
+      "frames": [
+        0
+      ],
+      "hash": "BB4C0A3FB3A35C82ACC23814F4407DD55D00EADF00EC593454387713D2D4EBB6"
+    },
+    {
+      "name": "camera-pitch-minus-20",
+      "frames": [
+        0
+      ],
+      "hash": "9DB271A780B32E387169A30058E9D8E6288DBBA9575A4781622FF3CBE7A85219"
+    },
+    {
+      "name": "camera-pitch-10",
+      "frames": [
+        0
+      ],
+      "hash": "3072C56D80C9BEFFDC119E8AEDBB9BF093D14ABEF03520843779DCE0ED2D4D9C"
+    },
+    {
+      "name": "drop-radius-0.06",
+      "frames": [
+        0
+      ],
+      "hash": "0EA83ED497F4C01B2624C55CA415E8D2706CAA63C851EBD95724FF1C391A22E5"
+    },
+    {
+      "name": "drop-radius-0.4",
+      "frames": [
+        0
+      ],
+      "hash": "F2E7E76346960A9F26717481C021B5E46A89C08557227EFF92055281BE4BAB14"
+    },
+    {
+      "name": "secondary-bow-0",
+      "frames": [
+        0
+      ],
+      "hash": "F37D5B268C1A8F80A6F0CC9C11E850B3A6656A015B73DE833C6B8BCFC08A8740"
+    },
+    {
+      "name": "secondary-bow-100-wide",
+      "frames": [
+        0
+      ],
+      "hash": "FE91542653627600E4A5A641CCB5BA814CCE7006FDACA68B9DC1C3B7F0FBE9BF"
+    },
+    {
+      "name": "dark-band-0",
+      "frames": [
+        0
+      ],
+      "hash": "10B94EFE9EABD6925EEA988219D7BD1E70315EAFE1AD0EA7BED5668E4ACBBCBF"
+    },
+    {
+      "name": "dark-band-100",
+      "frames": [
+        0
+      ],
+      "hash": "F3848BDA25D490ED3FAF665CFE3CF226100221349FA2B529846DA80A0568C5DE"
+    }
+  ]
+}
