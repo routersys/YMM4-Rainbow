@@ -165,12 +165,13 @@ internal static class RainbowOptics
 
     public static RainbowRay Solve(int reflections, double index)
     {
-        var cosine = Math.Sqrt((index * index - 1.0) / ((reflections + 1.0) * (reflections + 1.0) - 1.0));
+        var segments = reflections + 1.0;
+        var cosine = Math.Sqrt((index * index - 1.0) / (segments * segments - 1.0));
         var incidence = Math.Acos(cosine);
         var refraction = Math.Asin(Math.Sin(incidence) / index);
         var deviation = Deviation(reflections, incidence, refraction);
         var rainbowAngle = reflections % 2 == 1 ? deviation : 2.0 * Math.PI - deviation;
-        var curvature = 2.0 * (reflections + 1.0) * Math.Sin(incidence) * (1.0 - 1.0 / ((reflections + 1.0) * (reflections + 1.0))) / (index * Math.Cos(refraction));
+        var curvature = 2.0 * segments * Math.Sin(incidence) * (1.0 - 1.0 / (segments * segments)) / (index * Math.Cos(refraction));
         return new RainbowRay(reflections, index, incidence, refraction, deviation, rainbowAngle, curvature, Transmission(reflections, incidence, refraction, index));
     }
 
@@ -185,32 +186,41 @@ internal static class RainbowOptics
 
     public static double Intensity(RainbowRay ray, double sizeParameter, double scatteringAngle)
     {
-        var offset = ray.Reflections % 2 == 1 ? scatteringAngle - ray.RainbowAngle : ray.RainbowAngle - scatteringAngle;
+        var offset = Direction(ray.Reflections) * (scatteringAngle - ray.RainbowAngle);
         var scale = SizeScale(ray, sizeParameter);
-        var geometric = Math.Sin(ray.Incidence) * Math.Cos(ray.Incidence) * ray.Transmission
-            / (Math.Sin(ray.RainbowAngle) * Math.Sqrt(2.0 * ray.Curvature));
         var airy = AiryFunction.Ai(-scale * offset);
-        return 4.0 * Math.PI * geometric * Math.Sqrt(scale) * airy * airy;
+        return Amplitude(ray, scale) * airy * airy;
     }
 
     public static PreparedRainbow Prepare(RainbowRay ray, double sizeParameter)
     {
         var scale = SizeScale(ray, sizeParameter);
+        return new PreparedRainbow(Direction(ray.Reflections), ray.RainbowAngle, scale, Amplitude(ray, scale));
+    }
+
+    private static double Direction(int reflections)
+        => reflections % 2 == 1 ? 1.0 : -1.0;
+
+    private static double Amplitude(RainbowRay ray, double scale)
+    {
         var geometric = Math.Sin(ray.Incidence) * Math.Cos(ray.Incidence) * ray.Transmission
             / (Math.Sin(ray.RainbowAngle) * Math.Sqrt(2.0 * ray.Curvature));
-        return new PreparedRainbow(ray.Reflections % 2 == 1 ? 1.0 : -1.0, ray.RainbowAngle, scale, 4.0 * Math.PI * geometric * Math.Sqrt(scale));
+        return 4.0 * Math.PI * geometric * Math.Sqrt(scale);
     }
 
     private static double Transmission(int reflections, double incidence, double refraction, double index)
     {
         var cosI = Math.Cos(incidence);
         var cosR = Math.Cos(refraction);
-        var rs = Math.Pow((cosI - index * cosR) / (cosI + index * cosR), 2);
-        var rp = Math.Pow((index * cosI - cosR) / (index * cosI + cosR), 2);
-        var perpendicular = Math.Pow(1.0 - rs, 2) * Math.Pow(rs, reflections);
-        var parallel = Math.Pow(1.0 - rp, 2) * Math.Pow(rp, reflections);
+        var rs = Square((cosI - index * cosR) / (cosI + index * cosR));
+        var rp = Square((index * cosI - cosR) / (index * cosI + cosR));
+        var perpendicular = Square(1.0 - rs) * Math.Pow(rs, reflections);
+        var parallel = Square(1.0 - rp) * Math.Pow(rp, reflections);
         return 0.5 * (perpendicular + parallel);
     }
+
+    private static double Square(double value)
+        => value * value;
 }
 
 internal readonly record struct PreparedRainbow(double Direction, double RainbowAngle, double Scale, double Amplitude)
