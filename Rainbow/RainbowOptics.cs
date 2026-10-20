@@ -2,23 +2,24 @@ namespace Rainbow;
 
 internal static class WaterOptics
 {
-    private const double B1 = 5.684027565e-1;
-    private const double B2 = 1.726177391e-1;
-    private const double B3 = 2.086189578e-2;
-    private const double B4 = 1.130748688e-1;
-    private const double C1 = 5.101829712e-3;
-    private const double C2 = 1.821153936e-2;
-    private const double C3 = 2.620722293e-2;
-    private const double C4 = 1.069792721e1;
+    private const double MicrometersPerNanometer = 1e-3;
     private const double AirRefractiveIndex = 1.000272;
+
+    private static readonly (double Strength, double Resonance)[] SellmeierTerms =
+    [
+        (5.684027565e-1, 5.101829712e-3),
+        (1.726177391e-1, 1.821153936e-2),
+        (2.086189578e-2, 2.620722293e-2),
+        (1.130748688e-1, 1.069792721e1),
+    ];
 
     public static double RefractiveIndex(double wavelengthNanometers)
     {
-        var squared = wavelengthNanometers * wavelengthNanometers * 1e-6;
-        var sum = B1 * squared / (squared - C1)
-            + B2 * squared / (squared - C2)
-            + B3 * squared / (squared - C3)
-            + B4 * squared / (squared - C4);
+        var micrometers = wavelengthNanometers * MicrometersPerNanometer;
+        var squared = micrometers * micrometers;
+        var sum = 0.0;
+        foreach (var (strength, resonance) in SellmeierTerms)
+            sum += strength * squared / (squared - resonance);
         return Math.Sqrt(1.0 + sum) / AirRefractiveIndex;
     }
 }
