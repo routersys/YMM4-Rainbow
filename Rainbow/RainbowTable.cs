@@ -145,10 +145,15 @@ internal sealed class RainbowPhysicalTable
                 * (1.0 - SmoothStep(RainbowSettings.TableEndDegrees - RainbowSettings.TableOuterTaperDegrees, RainbowSettings.TableEndDegrees, angle));
         }
 
-        return new RainbowPhysicalTable(
-            smoothedPrimary.Select((value, index) => (float)(Math.Max(value, 0.0) * scale * taper[index / RainbowSettings.ColorChannels])).ToArray(),
-            smoothedSecondary.Select((value, index) => (float)(Math.Max(value, 0.0) * scale * taper[index / RainbowSettings.ColorChannels])).ToArray(),
-            shadow);
+        return new RainbowPhysicalTable(Normalize(smoothedPrimary, scale, taper), Normalize(smoothedSecondary, scale, taper), shadow);
+    }
+
+    private static float[] Normalize(double[] colors, double scale, double[] taper)
+    {
+        var result = new float[colors.Length];
+        for (var index = 0; index < colors.Length; index++)
+            result[index] = (float)(Math.Max(colors[index], 0.0) * scale * taper[index / RainbowSettings.ColorChannels]);
+        return result;
     }
 
     private static double[] SunKernel(double sunDiameterDegrees)
