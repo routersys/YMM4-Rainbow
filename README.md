@@ -49,6 +49,10 @@ YukkuriMovieMaker4（YMM4）上で動作する、太陽の高度とカメラの�
 
 虹の色は水滴の半径と光の波長から、角度ごとの明るさを波長ごとに計算して求めます。波長ごとの明るさに、太陽光の波長ごとの強さと、人の目が各波長の光をどんな色として感じるかを表す等色関数を掛けて足し合わせた値が、角度ごとの虹の色です。この角度と色の対応は1024個の値の表にしておき、画素ごとに表を読んで色を足します。
 
+次の画像は、空の画像に虹を重ねた例です。
+
+![虹の作例](https://github.com/routersys/YMM4-Rainbow/blob/main/docs/Rainbow-example.png)
+
 本プラグインが依拠する資料は次のとおりです。
 
 - 水滴による明るさの角度ごとの分布: Airyの論文「On the intensity of light in the neighbourhood of a caustic」（Transactions of the Cambridge Philosophical Society、1838年）が示した、エアリー関数による近似に基づきます。
