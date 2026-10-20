@@ -118,18 +118,11 @@ public sealed class RainbowSettingsTests
     [Fact]
     public void AnEqualEnergySpectrumGivesAWhiteSrgbColor()
     {
-        var x = 0.0;
-        var y = 0.0;
-        var z = 0.0;
+        var sum = new Tristimulus();
         for (var wavelength = 380.0; wavelength <= 780.0; wavelength += 5.0)
-        {
-            var (px, py, pz) = SolarSpectrum.ColorMatching(wavelength);
-            x += px;
-            y += py;
-            z += pz;
-        }
+            sum += SolarSpectrum.ColorMatching(wavelength);
 
-        var (red, green, blue) = SolarSpectrum.ToLinearSrgb(x / y, 1.0, z / y);
+        var (red, green, blue) = SolarSpectrum.ToLinearSrgb((1.0 / sum.Y) * sum);
 
         Assert.Equal(1.0, green, 0.25);
         Assert.InRange(red / green, 0.8, 1.3);

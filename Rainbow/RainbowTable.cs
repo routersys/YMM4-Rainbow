@@ -1,5 +1,14 @@
 namespace Rainbow;
 
+internal readonly record struct Tristimulus(double X, double Y, double Z)
+{
+    public static Tristimulus operator +(Tristimulus left, Tristimulus right)
+        => new(left.X + right.X, left.Y + right.Y, left.Z + right.Z);
+
+    public static Tristimulus operator *(double scale, Tristimulus value)
+        => new(scale * value.X, scale * value.Y, scale * value.Z);
+}
+
 internal static class SolarSpectrum
 {
     private const double PlanckConstant = 6.62607015e-34;
@@ -13,7 +22,7 @@ internal static class SolarSpectrum
         return 2.0 * PlanckConstant * LightSpeed * LightSpeed / (Math.Pow(wavelength, 5) * (Math.Exp(exponent) - 1.0));
     }
 
-    public static (double X, double Y, double Z) ColorMatching(double wavelengthNanometers)
+    public static Tristimulus ColorMatching(double wavelengthNanometers)
     {
         var x = 0.362 * Lobe(wavelengthNanometers, 442.0, 0.0624, 0.0374)
             + 1.056 * Lobe(wavelengthNanometers, 599.8, 0.0264, 0.0323)
@@ -22,14 +31,14 @@ internal static class SolarSpectrum
             + 0.286 * Lobe(wavelengthNanometers, 530.9, 0.0613, 0.0322);
         var z = 1.217 * Lobe(wavelengthNanometers, 437.0, 0.0845, 0.0278)
             + 0.681 * Lobe(wavelengthNanometers, 459.0, 0.0385, 0.0725);
-        return (x, y, z);
+        return new Tristimulus(x, y, z);
     }
 
-    public static (double R, double G, double B) ToLinearSrgb(double x, double y, double z)
+    public static (double R, double G, double B) ToLinearSrgb(Tristimulus value)
         => (
-            3.2406 * x - 1.5372 * y - 0.4986 * z,
-            -0.9689 * x + 1.8758 * y + 0.0415 * z,
-            0.0557 * x - 0.2040 * y + 1.0570 * z);
+            3.2406 * value.X - 1.5372 * value.Y - 0.4986 * value.Z,
+            -0.9689 * value.X + 1.8758 * value.Y + 0.0415 * value.Z,
+            0.0557 * value.X - 0.2040 * value.Y + 1.0570 * value.Z);
 
     private static double Lobe(double wavelength, double center, double leftScale, double rightScale)
     {
@@ -57,41 +66,38 @@ internal sealed class RainbowPhysicalTable
     {
         var width = RainbowSettings.TableWidth;
         var count = RainbowSettings.GetWavelengthCount();
-        var weights = new (double X, double Y, double Z)[count];
+        var weights = new Tristimulus[count];
         var primary = new PreparedRainbow[count];
         var secondary = new PreparedRainbow[count];
-        var white = (X: 0.0, Y: 0.0, Z: 0.0);
+        var white = new Tristimulus();
         for (var index = 0; index < count; index++)
         {
             var wavelength = RainbowSettings.WavelengthStartNanometers + index * RainbowSettings.WavelengthStepNanometers;
             var radiance = SolarSpectrum.Radiance(wavelength, RainbowSettings.SolarTemperature);
-            var (x, y, z) = SolarSpectrum.ColorMatching(wavelength);
-            weights[index] = (radiance * x, radiance * y, radiance * z);
-            white = (white.X + weights[index].X, white.Y + weights[index].Y, white.Z + weights[index].Z);
+            weights[index] = radiance * SolarSpectrum.ColorMatching(wavelength);
+            white += weights[index];
             var refractiveIndex = WaterOptics.RefractiveIndex(wavelength);
             var sizeParameter = RainbowSettings.GetSizeParameter(radiusMillimeters, wavelength);
             primary[index] = RainbowOptics.Prepare(RainbowOptics.Solve(RainbowOptics.PrimaryReflections, refractiveIndex), sizeParameter);
             secondary[index] = RainbowOptics.Prepare(RainbowOptics.Solve(RainbowOptics.SecondaryReflections, refractiveIndex), sizeParameter);
         }
 
-        var (whiteRed, whiteGreen, whiteBlue) = SolarSpectrum.ToLinearSrgb(white.X, white.Y, white.Z);
+        var (whiteRed, whiteGreen, whiteBlue) = SolarSpectrum.ToLinearSrgb(white);
         var primaryColors = new double[width * 3];
         var secondaryColors = new double[width * 3];
         for (var index = 0; index < width; index++)
         {
             var scattering = Math.PI - RainbowSettings.GetTableAngleDegrees(index) * RainbowSettings.RadiansPerDegree;
-            var primaryXyz = (X: 0.0, Y: 0.0, Z: 0.0);
-            var secondaryXyz = (X: 0.0, Y: 0.0, Z: 0.0);
+            var primaryXyz = new Tristimulus();
+            var secondaryXyz = new Tristimulus();
             for (var wave = 0; wave < count; wave++)
             {
-                var first = primary[wave].Evaluate(scattering);
-                var second = secondary[wave].Evaluate(scattering);
-                primaryXyz = (primaryXyz.X + first * weights[wave].X, primaryXyz.Y + first * weights[wave].Y, primaryXyz.Z + first * weights[wave].Z);
-                secondaryXyz = (secondaryXyz.X + second * weights[wave].X, secondaryXyz.Y + second * weights[wave].Y, secondaryXyz.Z + second * weights[wave].Z);
+                primaryXyz += primary[wave].Evaluate(scattering) * weights[wave];
+                secondaryXyz += secondary[wave].Evaluate(scattering) * weights[wave];
             }
 
-            var (pr, pg, pb) = SolarSpectrum.ToLinearSrgb(primaryXyz.X, primaryXyz.Y, primaryXyz.Z);
-            var (sr, sg, sb) = SolarSpectrum.ToLinearSrgb(secondaryXyz.X, secondaryXyz.Y, secondaryXyz.Z);
+            var (pr, pg, pb) = SolarSpectrum.ToLinearSrgb(primaryXyz);
+            var (sr, sg, sb) = SolarSpectrum.ToLinearSrgb(secondaryXyz);
             primaryColors[index * 3] = pr / whiteRed;
             primaryColors[index * 3 + 1] = pg / whiteGreen;
             primaryColors[index * 3 + 2] = pb / whiteBlue;
