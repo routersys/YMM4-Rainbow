@@ -16,6 +16,8 @@ internal static class RainbowSettings
     public const double WavelengthEndNanometers = 780.0;
     public const double WavelengthStepNanometers = 10.0;
     public const double SolarTemperature = 5772.0;
+    public const double RedEdgeWavelengthNanometers = 700.0;
+    public const double NanometersPerMillimeter = 1e6;
     public const double ShadowRampStart = 0.5;
     public const double ShadowRampEnd = 2.5;
     public const double MinimumRadiusMillimeters = 0.05;
@@ -35,7 +37,7 @@ internal static class RainbowSettings
         => (int)Math.Round((WavelengthEndNanometers - WavelengthStartNanometers) / WavelengthStepNanometers) + 1;
 
     public static double GetSizeParameter(double radiusMillimeters, double wavelengthNanometers)
-        => 2.0 * Math.PI * radiusMillimeters * 1e6 / wavelengthNanometers;
+        => 2.0 * Math.PI * radiusMillimeters * NanometersPerMillimeter / wavelengthNanometers;
 
     public static float GetHalfFieldOfViewTangent(double fieldOfViewDegrees)
     {

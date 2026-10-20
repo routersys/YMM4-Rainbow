@@ -199,9 +199,8 @@ internal sealed class RainbowPhysicalTable
 
     private static float[] BuildShadow(double radiusMillimeters, double sunDiameterDegrees)
     {
-        const double RedWavelength = 700.0;
-        var index = WaterOptics.RefractiveIndex(RedWavelength);
-        var sizeParameter = RainbowSettings.GetSizeParameter(radiusMillimeters, RedWavelength);
+        var index = WaterOptics.RefractiveIndex(RainbowSettings.RedEdgeWavelengthNanometers);
+        var sizeParameter = RainbowSettings.GetSizeParameter(radiusMillimeters, RainbowSettings.RedEdgeWavelengthNanometers);
         var primary = RainbowOptics.Solve(RainbowOptics.PrimaryReflections, index);
         var secondary = RainbowOptics.Solve(RainbowOptics.SecondaryReflections, index);
         var primaryEdge = 180.0 - primary.RainbowAngle / RainbowSettings.RadiansPerDegree;
