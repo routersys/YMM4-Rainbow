@@ -14,7 +14,8 @@ cbuffer Constants : register(b0)
     float tableWidth : packoffset(c2.w);
 };
 
-static const float DegreesPerRadian = 57.29577951308232;
+static const float Pi = 3.14159265358979;
+static const float DegreesPerRadian = 180.0 / Pi;
 
 float3 SrgbToLinear(float3 encoded)
 {
