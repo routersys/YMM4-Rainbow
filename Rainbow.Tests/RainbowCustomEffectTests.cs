@@ -89,15 +89,10 @@ public sealed class RainbowCustomEffectTests
     }
 
     [Theory]
-    [InlineData(-1f, 1e-4f)]
-    [InlineData(0f, 1e-4f)]
-    [InlineData(0.5f, 0.5f)]
-    [InlineData(3.7f, 3.7f)]
-    [InlineData(1e5f, 1e4f)]
-    [InlineData(float.PositiveInfinity, 1e4f)]
-    [InlineData(float.NegativeInfinity, 1e-4f)]
-    [InlineData(float.NaN, 1f)]
-    public void TheHalfFieldTangentStaysPositiveAndFinite(float value, float expected)
+    [InlineData(0.5f)]
+    [InlineData(1f)]
+    [InlineData(3.7f)]
+    public void TheHalfFieldTangentKeepsValuesInsideTheFieldOfViewLimits(float value)
     {
         using var devices = new GraphicsDevices();
         using var context = devices.CreateContext();
@@ -105,7 +100,49 @@ public sealed class RainbowCustomEffectTests
 
         effect.HalfFieldTangent = value;
 
-        Assert.Equal(expected, Read(effect, PropertyIndex.HalfFieldTangent));
+        Assert.Equal(value, Read(effect, PropertyIndex.HalfFieldTangent));
+    }
+
+    [Theory]
+    [InlineData(-1f)]
+    [InlineData(0f)]
+    [InlineData(float.NegativeInfinity)]
+    public void TheHalfFieldTangentNeverFallsBelowTheNarrowestFieldOfView(float value)
+    {
+        using var devices = new GraphicsDevices();
+        using var context = devices.CreateContext();
+        using var effect = new RainbowCustomEffect(context);
+
+        effect.HalfFieldTangent = value;
+
+        Assert.Equal(RainbowSettings.MinimumHalfFieldTangent, Read(effect, PropertyIndex.HalfFieldTangent));
+    }
+
+    [Theory]
+    [InlineData(4f)]
+    [InlineData(1e5f)]
+    [InlineData(float.PositiveInfinity)]
+    public void TheHalfFieldTangentNeverExceedsTheWidestFieldOfView(float value)
+    {
+        using var devices = new GraphicsDevices();
+        using var context = devices.CreateContext();
+        using var effect = new RainbowCustomEffect(context);
+
+        effect.HalfFieldTangent = value;
+
+        Assert.Equal(RainbowSettings.MaximumHalfFieldTangent, Read(effect, PropertyIndex.HalfFieldTangent));
+    }
+
+    [Fact]
+    public void ANonNumberLeavesTheHalfFieldTangentAtItsDefault()
+    {
+        using var devices = new GraphicsDevices();
+        using var context = devices.CreateContext();
+        using var effect = new RainbowCustomEffect(context);
+
+        effect.HalfFieldTangent = float.NaN;
+
+        Assert.Equal(1f, Read(effect, PropertyIndex.HalfFieldTangent));
     }
 
     [Theory]

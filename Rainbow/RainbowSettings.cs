@@ -27,6 +27,9 @@ internal static class RainbowSettings
     public const double MaximumFieldOfViewDegrees = 150.0;
     public const double RadiansPerDegree = Math.PI / 180.0;
 
+    public static readonly float MinimumHalfFieldTangent = GetHalfFieldOfViewTangent(MinimumFieldOfViewDegrees);
+    public static readonly float MaximumHalfFieldTangent = GetHalfFieldOfViewTangent(MaximumFieldOfViewDegrees);
+
     public static double GetTableStepDegrees()
         => (TableEndDegrees - TableStartDegrees) / (TableWidth - 1);
 

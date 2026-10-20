@@ -25,8 +25,7 @@ internal sealed class RainbowCustomEffect(IGraphicsDevicesAndContext devices)
     public float AntisolarZ { set => SetValue((int)PropertyIndex.AntisolarZ, value); }
     public float HalfFieldTangent { set => SetValue((int)PropertyIndex.HalfFieldTangent, value); }
 
-    private const float MinimumHalfFieldTangent = 1e-4f;
-    private const float MaximumHalfFieldTangent = 1e4f;
+    private const float DefaultHalfFieldTangent = 1f;
 
     [CustomEffect(2)]
     internal sealed class EffectImpl : D2D1CustomShaderEffectImplBase<EffectImpl>
@@ -47,12 +46,12 @@ internal sealed class RainbowCustomEffect(IGraphicsDevicesAndContext devices)
         public float AntisolarZ { get => _cb.AntisolarZ; set { _cb.AntisolarZ = Sanitize(value, -1f, 1f); UpdateConstants(); } }
 
         [CustomEffectProperty(PropertyType.Float, (int)PropertyIndex.HalfFieldTangent)]
-        public float HalfFieldTangent { get => _cb.HalfFieldTangent; set { _cb.HalfFieldTangent = float.IsNaN(value) ? 1f : Math.Clamp(value, MinimumHalfFieldTangent, MaximumHalfFieldTangent); UpdateConstants(); } }
+        public float HalfFieldTangent { get => _cb.HalfFieldTangent; set { _cb.HalfFieldTangent = float.IsNaN(value) ? DefaultHalfFieldTangent : Math.Clamp(value, RainbowSettings.MinimumHalfFieldTangent, RainbowSettings.MaximumHalfFieldTangent); UpdateConstants(); } }
 
         public EffectImpl() : base(ShaderResourceUri.Get("Rainbow"))
         {
             _cb.AntisolarZ = 1f;
-            _cb.HalfFieldTangent = 1f;
+            _cb.HalfFieldTangent = DefaultHalfFieldTangent;
             _cb.TableStart = (float)RainbowSettings.TableStartDegrees;
             _cb.TableSpan = (float)(RainbowSettings.TableEndDegrees - RainbowSettings.TableStartDegrees);
             _cb.TableWidth = RainbowSettings.TableWidth;
