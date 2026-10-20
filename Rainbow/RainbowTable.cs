@@ -104,8 +104,8 @@ internal sealed class RainbowPhysicalTable
         }
 
         var (whiteRed, whiteGreen, whiteBlue) = SolarSpectrum.ToLinearSrgb(white);
-        var primaryColors = new double[width * 3];
-        var secondaryColors = new double[width * 3];
+        var primaryColors = new double[width * RainbowSettings.ColorChannels];
+        var secondaryColors = new double[width * RainbowSettings.ColorChannels];
         for (var index = 0; index < width; index++)
         {
             var scattering = Math.PI - RainbowSettings.GetTableAngleDegrees(index) * RainbowSettings.RadiansPerDegree;
@@ -119,12 +119,13 @@ internal sealed class RainbowPhysicalTable
 
             var (pr, pg, pb) = SolarSpectrum.ToLinearSrgb(primaryXyz);
             var (sr, sg, sb) = SolarSpectrum.ToLinearSrgb(secondaryXyz);
-            primaryColors[index * 3] = pr / whiteRed;
-            primaryColors[index * 3 + 1] = pg / whiteGreen;
-            primaryColors[index * 3 + 2] = pb / whiteBlue;
-            secondaryColors[index * 3] = sr / whiteRed;
-            secondaryColors[index * 3 + 1] = sg / whiteGreen;
-            secondaryColors[index * 3 + 2] = sb / whiteBlue;
+            var offset = index * RainbowSettings.ColorChannels;
+            primaryColors[offset] = pr / whiteRed;
+            primaryColors[offset + 1] = pg / whiteGreen;
+            primaryColors[offset + 2] = pb / whiteBlue;
+            secondaryColors[offset] = sr / whiteRed;
+            secondaryColors[offset + 1] = sg / whiteGreen;
+            secondaryColors[offset + 2] = sb / whiteBlue;
         }
 
         var kernel = SunKernel(sunDiameterDegrees);
@@ -145,8 +146,8 @@ internal sealed class RainbowPhysicalTable
         }
 
         return new RainbowPhysicalTable(
-            smoothedPrimary.Select((value, index) => (float)(Math.Max(value, 0.0) * scale * taper[index / 3])).ToArray(),
-            smoothedSecondary.Select((value, index) => (float)(Math.Max(value, 0.0) * scale * taper[index / 3])).ToArray(),
+            smoothedPrimary.Select((value, index) => (float)(Math.Max(value, 0.0) * scale * taper[index / RainbowSettings.ColorChannels])).ToArray(),
+            smoothedSecondary.Select((value, index) => (float)(Math.Max(value, 0.0) * scale * taper[index / RainbowSettings.ColorChannels])).ToArray(),
             shadow);
     }
 
@@ -180,16 +181,16 @@ internal sealed class RainbowPhysicalTable
         var result = new double[colors.Length];
         for (var index = 0; index < width; index++)
         {
-            for (var channel = 0; channel < 3; channel++)
+            for (var channel = 0; channel < RainbowSettings.ColorChannels; channel++)
             {
                 var sum = 0.0;
                 for (var tap = -half; tap <= half; tap++)
                 {
                     var source = Math.Clamp(index + tap, 0, width - 1);
-                    sum += kernel[tap + half] * colors[source * 3 + channel];
+                    sum += kernel[tap + half] * colors[source * RainbowSettings.ColorChannels + channel];
                 }
 
-                result[index * 3 + channel] = sum;
+                result[index * RainbowSettings.ColorChannels + channel] = sum;
             }
         }
 
@@ -232,20 +233,22 @@ internal static class RainbowTable
     public static Half[] Compose(RainbowPhysicalTable physical, double secondaryStrength, double darkness, double saturation)
     {
         var width = RainbowSettings.TableWidth;
-        var texels = new Half[width * 4];
+        var texels = new Half[width * RainbowSettings.TexelChannels];
         var secondary = Math.Clamp(secondaryStrength, 0.0, 1.0);
         var band = Math.Clamp(darkness, 0.0, 1.0);
         var chroma = Math.Clamp(saturation, 0.0, 2.0);
         for (var index = 0; index < width; index++)
         {
-            var red = physical.Primary[index * 3] + secondary * physical.Secondary[index * 3];
-            var green = physical.Primary[index * 3 + 1] + secondary * physical.Secondary[index * 3 + 1];
-            var blue = physical.Primary[index * 3 + 2] + secondary * physical.Secondary[index * 3 + 2];
+            var source = index * RainbowSettings.ColorChannels;
+            var target = index * RainbowSettings.TexelChannels;
+            var red = physical.Primary[source] + secondary * physical.Secondary[source];
+            var green = physical.Primary[source + 1] + secondary * physical.Secondary[source + 1];
+            var blue = physical.Primary[source + 2] + secondary * physical.Secondary[source + 2];
             var luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-            texels[index * 4] = (Half)Math.Max(luminance + chroma * (red - luminance), 0.0);
-            texels[index * 4 + 1] = (Half)Math.Max(luminance + chroma * (green - luminance), 0.0);
-            texels[index * 4 + 2] = (Half)Math.Max(luminance + chroma * (blue - luminance), 0.0);
-            texels[index * 4 + 3] = (Half)(1.0 - band * physical.Shadow[index]);
+            texels[target] = (Half)Math.Max(luminance + chroma * (red - luminance), 0.0);
+            texels[target + 1] = (Half)Math.Max(luminance + chroma * (green - luminance), 0.0);
+            texels[target + 2] = (Half)Math.Max(luminance + chroma * (blue - luminance), 0.0);
+            texels[target + 3] = (Half)(1.0 - band * physical.Shadow[index]);
         }
 
         return texels;
@@ -260,11 +263,13 @@ internal static class RainbowTable
         var lower = (int)Math.Floor(position);
         var upper = Math.Min(lower + 1, RainbowSettings.TableWidth - 1);
         var fraction = (float)(position - lower);
+        var first = lower * RainbowSettings.TexelChannels;
+        var second = upper * RainbowSettings.TexelChannels;
         return (
-            Mix((float)texels[lower * 4], (float)texels[upper * 4], fraction),
-            Mix((float)texels[lower * 4 + 1], (float)texels[upper * 4 + 1], fraction),
-            Mix((float)texels[lower * 4 + 2], (float)texels[upper * 4 + 2], fraction),
-            Mix((float)texels[lower * 4 + 3], (float)texels[upper * 4 + 3], fraction));
+            Mix((float)texels[first], (float)texels[second], fraction),
+            Mix((float)texels[first + 1], (float)texels[second + 1], fraction),
+            Mix((float)texels[first + 2], (float)texels[second + 2], fraction),
+            Mix((float)texels[first + 3], (float)texels[second + 3], fraction));
     }
 
     private static float Mix(float first, float second, float fraction)

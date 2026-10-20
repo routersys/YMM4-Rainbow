@@ -5,6 +5,9 @@ namespace Rainbow;
 internal static class RainbowSettings
 {
     public const int TableWidth = 1024;
+    public const int ColorChannels = 3;
+    public const int TexelChannels = 4;
+    public const int TexelBytes = TexelChannels * sizeof(ushort);
     public const double TableStartDegrees = 20.0;
     public const double TableEndDegrees = 64.0;
     public const double TableInnerTaperDegrees = 10.0;

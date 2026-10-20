@@ -97,7 +97,7 @@ internal sealed class RainbowEffectProcessor(IGraphicsDevicesAndContext devices,
         var handle = GCHandle.Alloc(texels, GCHandleType.Pinned);
         try
         {
-            _table!.CopyFromMemory(handle.AddrOfPinnedObject(), RainbowSettings.TableWidth * 4 * sizeof(ushort));
+            _table!.CopyFromMemory(handle.AddrOfPinnedObject(), RainbowSettings.TableWidth * RainbowSettings.TexelBytes);
         }
         finally
         {
@@ -117,14 +117,14 @@ internal sealed class RainbowEffectProcessor(IGraphicsDevicesAndContext devices,
         _effect = effect;
         disposer.Collect(effect);
         var properties = new BitmapProperties1(new PixelFormat(Format.R16G16B16A16_Float, Vortice.DCommon.AlphaMode.Premultiplied), 96f, 96f, BitmapOptions.None);
-        var empty = new Half[RainbowSettings.TableWidth * 4];
+        var empty = new Half[RainbowSettings.TableWidth * RainbowSettings.TexelChannels];
         var handle = GCHandle.Alloc(empty, GCHandleType.Pinned);
         try
         {
             _table = ((ID2D1DeviceContext1)devices.DeviceContext).CreateBitmap(
                 new Vortice.Mathematics.SizeI(RainbowSettings.TableWidth, 1),
                 handle.AddrOfPinnedObject(),
-                RainbowSettings.TableWidth * 4 * sizeof(ushort),
+                RainbowSettings.TableWidth * RainbowSettings.TexelBytes,
                 properties);
         }
         finally
