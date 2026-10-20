@@ -230,6 +230,10 @@ internal sealed class RainbowPhysicalTable
 
 internal static class RainbowTable
 {
+    private const double RedLuminance = 0.2126;
+    private const double GreenLuminance = 0.7152;
+    private const double BlueLuminance = 0.0722;
+
     public static Half[] Compose(RainbowPhysicalTable physical, double secondaryStrength, double darkness, double saturation)
     {
         var width = RainbowSettings.TableWidth;
@@ -244,7 +248,7 @@ internal static class RainbowTable
             var red = physical.Primary[source] + secondary * physical.Secondary[source];
             var green = physical.Primary[source + 1] + secondary * physical.Secondary[source + 1];
             var blue = physical.Primary[source + 2] + secondary * physical.Secondary[source + 2];
-            var luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+            var luminance = RedLuminance * red + GreenLuminance * green + BlueLuminance * blue;
             texels[target] = (Half)Math.Max(luminance + chroma * (red - luminance), 0.0);
             texels[target + 1] = (Half)Math.Max(luminance + chroma * (green - luminance), 0.0);
             texels[target + 2] = (Half)Math.Max(luminance + chroma * (blue - luminance), 0.0);
