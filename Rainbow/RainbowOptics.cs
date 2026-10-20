@@ -28,8 +28,12 @@ internal static class AiryFunction
 {
     private const double AiAtZero = 0.355028053887817239;
     private const double NegativeAiPrimeAtZero = 0.258819403792806798;
-    private const double SeriesLimit = 5.0;
+    private const double MaclaurinLowerLimit = -6.0;
+    private const double MaclaurinUpperLimit = 5.0;
+    private const int MaximumSeriesTerms = 80;
     private const int AsymptoticTerms = 12;
+
+    private static readonly double MachineEpsilon = Math.BitIncrement(1.0) - 1.0;
 
     private const double SquaredStart = -100.0;
     private const double SquaredEnd = 12.0;
@@ -75,9 +79,9 @@ internal static class AiryFunction
 
     public static double Ai(double x)
     {
-        if (x > SeriesLimit)
+        if (x > MaclaurinUpperLimit)
             return DecayingAsymptotic(x);
-        if (x < -SeriesLimit - 1.0)
+        if (x < MaclaurinLowerLimit)
             return OscillatoryAsymptotic(-x);
         return MaclaurinSeries(x);
     }
@@ -89,13 +93,13 @@ internal static class AiryFunction
         var g = x;
         var sumF = f;
         var sumG = g;
-        for (var k = 0; k < 80; k++)
+        for (var k = 0; k < MaximumSeriesTerms; k++)
         {
             f *= cube / ((3 * k + 2) * (3 * k + 3));
             g *= cube / ((3 * k + 3) * (3 * k + 4));
             sumF += f;
             sumG += g;
-            if (Math.Abs(f) + Math.Abs(g) < 1e-18 * (Math.Abs(sumF) + Math.Abs(sumG)) && k > 4)
+            if (Math.Abs(f) + Math.Abs(g) < MachineEpsilon * (Math.Abs(sumF) + Math.Abs(sumG)))
                 break;
         }
 
