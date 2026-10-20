@@ -33,6 +33,9 @@ internal static class RainbowSettings
     public static double GetTableAngleDegrees(int index)
         => TableStartDegrees + index * GetTableStepDegrees();
 
+    public static double GetSunRadiusDegrees(double sunDiameterDegrees)
+        => Math.Clamp(sunDiameterDegrees, 0.0, MaximumSunDiameterDegrees) / 2.0;
+
     public static int GetWavelengthCount()
         => (int)Math.Round((WavelengthEndNanometers - WavelengthStartNanometers) / WavelengthStepNanometers) + 1;
 

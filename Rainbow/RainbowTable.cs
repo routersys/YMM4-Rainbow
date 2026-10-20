@@ -153,7 +153,7 @@ internal sealed class RainbowPhysicalTable
 
     private static double[] SunKernel(double sunDiameterDegrees)
     {
-        var radius = Math.Clamp(sunDiameterDegrees, 0.0, RainbowSettings.MaximumSunDiameterDegrees) / 2.0;
+        var radius = RainbowSettings.GetSunRadiusDegrees(sunDiameterDegrees);
         var step = RainbowSettings.GetTableStepDegrees();
         var half = (int)Math.Floor(radius / step);
         if (half == 0)
@@ -205,7 +205,7 @@ internal sealed class RainbowPhysicalTable
         var secondary = RainbowOptics.Solve(RainbowOptics.SecondaryReflections, index);
         var primaryEdge = 180.0 - primary.RainbowAngle / RainbowSettings.RadiansPerDegree;
         var secondaryEdge = 180.0 - secondary.RainbowAngle / RainbowSettings.RadiansPerDegree;
-        var sunRadius = Math.Clamp(sunDiameterDegrees, 0.0, RainbowSettings.MaximumSunDiameterDegrees) / 2.0;
+        var sunRadius = RainbowSettings.GetSunRadiusDegrees(sunDiameterDegrees);
         var primaryWidth = 1.0 / RainbowOptics.SizeScale(primary, sizeParameter) / RainbowSettings.RadiansPerDegree + sunRadius;
         var secondaryWidth = 1.0 / RainbowOptics.SizeScale(secondary, sizeParameter) / RainbowSettings.RadiansPerDegree + sunRadius;
         var shadow = new float[RainbowSettings.TableWidth];
