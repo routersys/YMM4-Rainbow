@@ -108,7 +108,7 @@ internal static class AiryFunction
 
     private static double DecayingAsymptotic(double x)
     {
-        var zeta = 2.0 / 3.0 * x * Math.Sqrt(x);
+        var zeta = Zeta(x);
         var term = 1.0;
         var sum = 1.0;
         for (var k = 1; k < AsymptoticTerms; k++)
@@ -122,7 +122,7 @@ internal static class AiryFunction
 
     private static double OscillatoryAsymptotic(double z)
     {
-        var zeta = 2.0 / 3.0 * z * Math.Sqrt(z);
+        var zeta = Zeta(z);
         var even = 0.0;
         var odd = 0.0;
         var term = 1.0;
@@ -130,26 +130,19 @@ internal static class AiryFunction
         {
             if (k > 0)
                 term *= AsymptoticRatio(k) / zeta;
-            switch (k % 4)
-            {
-                case 0:
-                    even += term;
-                    break;
-                case 1:
-                    odd += term;
-                    break;
-                case 2:
-                    even -= term;
-                    break;
-                default:
-                    odd -= term;
-                    break;
-            }
+            var signed = k / 2 % 2 == 0 ? term : -term;
+            if (k % 2 == 0)
+                even += signed;
+            else
+                odd += signed;
         }
 
         var phase = zeta + Math.PI / 4.0;
         return (Math.Sin(phase) * even - Math.Cos(phase) * odd) / (Math.Sqrt(Math.PI) * Math.Sqrt(Math.Sqrt(z)));
     }
+
+    private static double Zeta(double x)
+        => 2.0 / 3.0 * x * Math.Sqrt(x);
 
     private static double AsymptoticRatio(int k)
         => (6.0 * k - 5.0) * (6.0 * k - 3.0) * (6.0 * k - 1.0) / (216.0 * k * (2.0 * k - 1.0));
