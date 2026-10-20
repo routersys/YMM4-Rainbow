@@ -106,7 +106,7 @@ internal sealed class RainbowPhysicalTable
         var (whiteRed, whiteGreen, whiteBlue) = SolarSpectrum.ToLinearSrgb(white);
         var primaryColors = new double[width * RainbowSettings.ColorChannels];
         var secondaryColors = new double[width * RainbowSettings.ColorChannels];
-        for (var index = 0; index < width; index++)
+        Parallel.For(0, width, index =>
         {
             var scattering = Math.PI - RainbowSettings.GetTableAngleDegrees(index) * RainbowSettings.RadiansPerDegree;
             var primaryXyz = new Tristimulus();
@@ -126,7 +126,7 @@ internal sealed class RainbowPhysicalTable
             secondaryColors[offset] = sr / whiteRed;
             secondaryColors[offset + 1] = sg / whiteGreen;
             secondaryColors[offset + 2] = sb / whiteBlue;
-        }
+        });
 
         var kernel = SunKernel(sunDiameterDegrees);
         var smoothedPrimary = Convolve(primaryColors, kernel);
@@ -184,7 +184,7 @@ internal sealed class RainbowPhysicalTable
         var width = RainbowSettings.TableWidth;
         var half = kernel.Length / 2;
         var result = new double[colors.Length];
-        for (var index = 0; index < width; index++)
+        Parallel.For(0, width, index =>
         {
             for (var channel = 0; channel < RainbowSettings.ColorChannels; channel++)
             {
@@ -197,7 +197,7 @@ internal sealed class RainbowPhysicalTable
 
                 result[index * RainbowSettings.ColorChannels + channel] = sum;
             }
-        }
+        });
 
         return result;
     }
