@@ -201,13 +201,9 @@ internal sealed class RainbowPhysicalTable
     {
         var index = WaterOptics.RefractiveIndex(RainbowSettings.RedEdgeWavelengthNanometers);
         var sizeParameter = RainbowSettings.GetSizeParameter(radiusMillimeters, RainbowSettings.RedEdgeWavelengthNanometers);
-        var primary = RainbowOptics.Solve(RainbowOptics.PrimaryReflections, index);
-        var secondary = RainbowOptics.Solve(RainbowOptics.SecondaryReflections, index);
-        var primaryEdge = 180.0 - primary.RainbowAngle / RainbowSettings.RadiansPerDegree;
-        var secondaryEdge = 180.0 - secondary.RainbowAngle / RainbowSettings.RadiansPerDegree;
         var sunRadius = RainbowSettings.GetSunRadiusDegrees(sunDiameterDegrees);
-        var primaryWidth = 1.0 / RainbowOptics.SizeScale(primary, sizeParameter) / RainbowSettings.RadiansPerDegree + sunRadius;
-        var secondaryWidth = 1.0 / RainbowOptics.SizeScale(secondary, sizeParameter) / RainbowSettings.RadiansPerDegree + sunRadius;
+        var (primaryEdge, primaryWidth) = ShadowEdge(RainbowOptics.PrimaryReflections, index, sizeParameter, sunRadius);
+        var (secondaryEdge, secondaryWidth) = ShadowEdge(RainbowOptics.SecondaryReflections, index, sizeParameter, sunRadius);
         var shadow = new float[RainbowSettings.TableWidth];
         for (var position = 0; position < shadow.Length; position++)
         {
@@ -218,6 +214,14 @@ internal sealed class RainbowPhysicalTable
         }
 
         return shadow;
+    }
+
+    private static (double Edge, double Width) ShadowEdge(int reflections, double index, double sizeParameter, double sunRadius)
+    {
+        var ray = RainbowOptics.Solve(reflections, index);
+        var edge = 180.0 - ray.RainbowAngle / RainbowSettings.RadiansPerDegree;
+        var width = 1.0 / RainbowOptics.SizeScale(ray, sizeParameter) / RainbowSettings.RadiansPerDegree + sunRadius;
+        return (edge, width);
     }
 
     private static double SmoothStep(double edge0, double edge1, double value)
