@@ -59,7 +59,7 @@ internal sealed class RainbowEffectProcessor(IGraphicsDevicesAndContext devices,
             physicalKey,
             Math.Clamp(_item.SecondaryBow.GetValue(frame, length, fps) / 100.0, 0.0, 1.0),
             Math.Clamp(_item.DarkBand.GetValue(frame, length, fps) / 100.0, 0.0, 1.0),
-            Math.Clamp(_item.Saturation.GetValue(frame, length, fps) / 100.0, 0.0, 2.0));
+            Math.Clamp(_item.Saturation.GetValue(frame, length, fps) / 100.0, 0.0, RainbowSettings.MaximumSaturation));
         if (_isFirst || _physical is null || _physicalKey != physicalKey)
         {
             _physical = RainbowPhysicalTable.Build(radius, sunDiameter);

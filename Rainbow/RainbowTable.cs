@@ -243,7 +243,7 @@ internal static class RainbowTable
         var texels = new Half[width * RainbowSettings.TexelChannels];
         var secondary = Math.Clamp(secondaryStrength, 0.0, 1.0);
         var band = Math.Clamp(darkness, 0.0, 1.0);
-        var chroma = Math.Clamp(saturation, 0.0, 2.0);
+        var chroma = Math.Clamp(saturation, 0.0, RainbowSettings.MaximumSaturation);
         for (var index = 0; index < width; index++)
         {
             var source = index * RainbowSettings.ColorChannels;

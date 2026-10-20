@@ -23,6 +23,7 @@ internal static class RainbowSettings
     public const double MinimumRadiusMillimeters = 0.05;
     public const double MaximumRadiusMillimeters = 0.4;
     public const double MaximumSunDiameterDegrees = 2.0;
+    public const double MaximumSaturation = 2.0;
     public const double MinimumFieldOfViewDegrees = 10.0;
     public const double MaximumFieldOfViewDegrees = 150.0;
     public const double RadiansPerDegree = Math.PI / 180.0;

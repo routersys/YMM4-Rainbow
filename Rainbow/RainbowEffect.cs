@@ -25,8 +25,8 @@ public sealed class RainbowEffect : VideoEffectBase
     public Animation Amount { get; } = new Animation(70, 0, 100);
 
     [Display(GroupName = nameof(Texts.BasicGroup), Name = nameof(Texts.Saturation), Description = nameof(Texts.SaturationDescription), Order = 1, ResourceType = typeof(Texts))]
-    [AnimationSlider("F1", "%", 0, 200)]
-    public Animation Saturation { get; } = new Animation(100, 0, 200);
+    [AnimationSlider("F1", "%", 0, 100 * RainbowSettings.MaximumSaturation)]
+    public Animation Saturation { get; } = new Animation(100, 0, 100 * RainbowSettings.MaximumSaturation);
 
     [Display(GroupName = nameof(Texts.SunGroup), Name = nameof(Texts.SunElevation), Description = nameof(Texts.SunElevationDescription), Order = 10, ResourceType = typeof(Texts))]
     [AnimationSlider("F1", "°", 0, 90)]
@@ -37,20 +37,20 @@ public sealed class RainbowEffect : VideoEffectBase
     public Animation AntisolarDirection { get; } = new Animation(0, -180, 180);
 
     [Display(GroupName = nameof(Texts.SunGroup), Name = nameof(Texts.SunDiameter), Description = nameof(Texts.SunDiameterDescription), Order = 12, ResourceType = typeof(Texts))]
-    [AnimationSlider("F2", "°", 0, 2)]
-    public Animation SunDiameter { get; } = new Animation(0.53, 0, 2);
+    [AnimationSlider("F2", "°", 0, RainbowSettings.MaximumSunDiameterDegrees)]
+    public Animation SunDiameter { get; } = new Animation(0.53, 0, RainbowSettings.MaximumSunDiameterDegrees);
 
     [Display(GroupName = nameof(Texts.CameraGroup), Name = nameof(Texts.FieldOfView), Description = nameof(Texts.FieldOfViewDescription), Order = 20, ResourceType = typeof(Texts))]
-    [AnimationSlider("F1", "°", 10, 150)]
-    public Animation FieldOfView { get; } = new Animation(60, 10, 150);
+    [AnimationSlider("F1", "°", RainbowSettings.MinimumFieldOfViewDegrees, RainbowSettings.MaximumFieldOfViewDegrees)]
+    public Animation FieldOfView { get; } = new Animation(60, RainbowSettings.MinimumFieldOfViewDegrees, RainbowSettings.MaximumFieldOfViewDegrees);
 
     [Display(GroupName = nameof(Texts.CameraGroup), Name = nameof(Texts.CameraPitch), Description = nameof(Texts.CameraPitchDescription), Order = 21, ResourceType = typeof(Texts))]
     [AnimationSlider("F1", "°", -60, 60)]
     public Animation CameraPitch { get; } = new Animation(0, -60, 60);
 
     [Display(GroupName = nameof(Texts.DropGroup), Name = nameof(Texts.DropRadius), Description = nameof(Texts.DropRadiusDescription), Order = 30, ResourceType = typeof(Texts))]
-    [AnimationSlider("F2", "mm", 0.05, 0.4)]
-    public Animation DropRadius { get; } = new Animation(0.2, 0.05, 0.4);
+    [AnimationSlider("F2", "mm", RainbowSettings.MinimumRadiusMillimeters, RainbowSettings.MaximumRadiusMillimeters)]
+    public Animation DropRadius { get; } = new Animation(0.2, RainbowSettings.MinimumRadiusMillimeters, RainbowSettings.MaximumRadiusMillimeters);
 
     [Display(GroupName = nameof(Texts.DropGroup), Name = nameof(Texts.SecondaryBow), Description = nameof(Texts.SecondaryBowDescription), Order = 31, ResourceType = typeof(Texts))]
     [AnimationSlider("F1", "%", 0, 100)]
