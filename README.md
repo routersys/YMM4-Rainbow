@@ -53,12 +53,7 @@ YukkuriMovieMaker4（YMM4）上で動作する、太陽の高度とカメラの�
 
 ![虹の作例](https://github.com/routersys/YMM4-Rainbow/blob/main/docs/Rainbow-example.png)
 
-本プラグインが依拠する資料は次のとおりです。
-
-- 水滴による明るさの角度ごとの分布: Airyの論文「On the intensity of light in the neighbourhood of a caustic」（Transactions of the Cambridge Philosophical Society、1838年）が示した、エアリー関数による近似に基づきます。
-- 水の屈折率: Daimon and Masumuraの論文「Measurement of the refractive index of distilled water from the near-infrared region to the ultraviolet region」（Applied Optics、2007年）の分散式で求めます。
-- 等色関数: Wyman, Sloan and Shirleyの論文「Simple Analytic Approximations to the CIE XYZ Color Matching Functions」（Journal of Computer Graphics Techniques、2013年）の近似式に基づきます。
-- 虹を物理に基づいて描く方法の概説: Sadeghiらの論文「Physically-Based Simulation of Rainbows」（ACM Transactions on Graphics、2012年）を参照しています。
+水滴による明るさの角度ごとの分布は、Airyの論文「On the intensity of light in the neighbourhood of a caustic」（Transactions of the Cambridge Philosophical Society、1838年）が示した、エアリー関数による近似に基づきます。水の屈折率は、Daimon and Masumuraの論文「Measurement of the refractive index of distilled water from the near-infrared region to the ultraviolet region」（Applied Optics、2007年）の分散式で求めます。等色関数の計算は、Wyman, Sloan and Shirleyの論文「Simple Analytic Approximations to the CIE XYZ Color Matching Functions」（Journal of Computer Graphics Techniques、2013年）に基づきます。虹を物理に基づいて描く方法の概説は、Sadeghiらの論文「Physically-Based Simulation of Rainbows」（ACM Transactions on Graphics、2012年）を参照しています。
 
 結果は設定と画素の位置だけから決まります。時間値と乱数は使いません。同じフレームは何度描いても同じ結果になります。
 
