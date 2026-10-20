@@ -9,11 +9,39 @@ internal readonly record struct Tristimulus(double X, double Y, double Z)
         => new(scale * value.X, scale * value.Y, scale * value.Z);
 }
 
+internal readonly record struct ColorLobe(double Amplitude, double Center, double LeftScale, double RightScale)
+{
+    public double Evaluate(double wavelength)
+    {
+        var t = (wavelength - Center) * (wavelength < Center ? LeftScale : RightScale);
+        return Amplitude * Math.Exp(-0.5 * t * t);
+    }
+}
+
 internal static class SolarSpectrum
 {
     private const double PlanckConstant = 6.62607015e-34;
     private const double LightSpeed = 299792458.0;
     private const double BoltzmannConstant = 1.380649e-23;
+
+    private static readonly ColorLobe[] MatchingLobesX =
+    [
+        new(0.362, 442.0, 0.0624, 0.0374),
+        new(1.056, 599.8, 0.0264, 0.0323),
+        new(-0.065, 501.1, 0.0490, 0.0382),
+    ];
+
+    private static readonly ColorLobe[] MatchingLobesY =
+    [
+        new(0.821, 568.8, 0.0213, 0.0247),
+        new(0.286, 530.9, 0.0613, 0.0322),
+    ];
+
+    private static readonly ColorLobe[] MatchingLobesZ =
+    [
+        new(1.217, 437.0, 0.0845, 0.0278),
+        new(0.681, 459.0, 0.0385, 0.0725),
+    ];
 
     public static double Radiance(double wavelengthNanometers, double temperature)
     {
@@ -23,16 +51,7 @@ internal static class SolarSpectrum
     }
 
     public static Tristimulus ColorMatching(double wavelengthNanometers)
-    {
-        var x = 0.362 * Lobe(wavelengthNanometers, 442.0, 0.0624, 0.0374)
-            + 1.056 * Lobe(wavelengthNanometers, 599.8, 0.0264, 0.0323)
-            - 0.065 * Lobe(wavelengthNanometers, 501.1, 0.0490, 0.0382);
-        var y = 0.821 * Lobe(wavelengthNanometers, 568.8, 0.0213, 0.0247)
-            + 0.286 * Lobe(wavelengthNanometers, 530.9, 0.0613, 0.0322);
-        var z = 1.217 * Lobe(wavelengthNanometers, 437.0, 0.0845, 0.0278)
-            + 0.681 * Lobe(wavelengthNanometers, 459.0, 0.0385, 0.0725);
-        return new Tristimulus(x, y, z);
-    }
+        => new(Sum(MatchingLobesX, wavelengthNanometers), Sum(MatchingLobesY, wavelengthNanometers), Sum(MatchingLobesZ, wavelengthNanometers));
 
     public static (double R, double G, double B) ToLinearSrgb(Tristimulus value)
         => (
@@ -40,10 +59,12 @@ internal static class SolarSpectrum
             -0.9689 * value.X + 1.8758 * value.Y + 0.0415 * value.Z,
             0.0557 * value.X - 0.2040 * value.Y + 1.0570 * value.Z);
 
-    private static double Lobe(double wavelength, double center, double leftScale, double rightScale)
+    private static double Sum(ColorLobe[] lobes, double wavelength)
     {
-        var t = (wavelength - center) * (wavelength < center ? leftScale : rightScale);
-        return Math.Exp(-0.5 * t * t);
+        var sum = 0.0;
+        foreach (var lobe in lobes)
+            sum += lobe.Evaluate(wavelength);
+        return sum;
     }
 }
 
