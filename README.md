@@ -49,10 +49,6 @@ YukkuriMovieMaker4（YMM4）上で動作する、太陽の高度とカメラの�
 
 虹の色は水滴の半径と光の波長から、角度ごとの明るさを波長ごとに計算して求めます。波長ごとの明るさに、太陽光の波長ごとの強さと、人の目が各波長の光をどんな色として感じるかを表す等色関数を掛けて足し合わせた値が、角度ごとの虹の色です。この角度と色の対応は1024個の値の表にしておき、画素ごとに表を読んで色を足します。
 
-次の画像は、空の画像に虹を重ねた例です。
-
-![虹の作例](https://github.com/routersys/YMM4-Rainbow/blob/main/docs/Rainbow-example.png)
-
 水滴による明るさの角度ごとの分布は、Airyの論文「On the intensity of light in the neighbourhood of a caustic」（Transactions of the Cambridge Philosophical Society、1838年）が示した、エアリー関数による近似に基づきます。水の屈折率は、Daimon and Masumuraの論文「Measurement of the refractive index of distilled water from the near-infrared region to the ultraviolet region」（Applied Optics、2007年）の分散式で求めます。等色関数の計算は、Wyman, Sloan and Shirleyの論文「Simple Analytic Approximations to the CIE XYZ Color Matching Functions」（Journal of Computer Graphics Techniques、2013年）に基づきます。虹を物理に基づいて描く方法の概説は、Sadeghiらの論文「Physically-Based Simulation of Rainbows」（ACM Transactions on Graphics、2012年）を参照しています。
 
 結果は設定と画素の位置だけから決まります。時間値と乱数は使いません。同じフレームは何度描いても同じ結果になります。
@@ -91,6 +87,10 @@ YukkuriMovieMaker4（YMM4）上で動作する、太陽の高度とカメラの�
 画素が見ている方向は「画角」から決めます。処理する範囲は、このエフェクトに入る映像を囲む矩形です。画角は処理する範囲の横幅に対する水平方向の画角で、レンズのゆがみがない透視投影として扱います。処理する範囲の中心がカメラの向く方向です。
 
 画素の方向と対日点の方向のなす角が20°から64°の範囲にあるとき、その角度に対応する値を表から読みます。表の1024個の値の間は線形補間で求めます。範囲の外の画素は変更しません。
+
+次の画像は、空と地面を描いた画像に、「画角」を120°にして適用した例です。ほかの項目は既定値です。
+
+![Image](https://github.com/routersys/YMM4-Rainbow/blob/main/docs/Rainbow-FieldOfView.png)
 
 ### 2. 水滴の中の光の進み方
 
